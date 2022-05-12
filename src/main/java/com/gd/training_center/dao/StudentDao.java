@@ -1,6 +1,6 @@
-package com.gd.trainingCenter.dao;
+package com.gd.training_center.dao;
 
-import com.gd.trainingCenter.model.Student;
+import com.gd.training_center.model.Student;
 
 import java.util.List;
 

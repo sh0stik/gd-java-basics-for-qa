@@ -1,4 +1,4 @@
-package com.gd.trainingCenter.model;
+package com.gd.training_center.model;
 
 import lombok.Data;
 

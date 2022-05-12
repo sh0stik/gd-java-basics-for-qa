@@ -1,7 +1,8 @@
-package com.gd.trainingCenter.model;
+package com.gd.training_center.model;
 
 import lombok.Data;
 
+import java.time.Duration;
 import java.util.List;
 
 
@@ -15,7 +16,11 @@ public @Data class Curriculum {
         this.courseNames = courseNames;
     }
 
-    public int getDuration() {
-        return courseList.stream().mapToInt(Course::getDuration).sum();
+    public Duration getDuration() {
+        Duration duration = Duration.ofHours(0);
+        for (Course course : courseList) {
+            duration = duration.plusHours(course.getDuration().toHours());
+        }
+        return duration;
     }
 }

@@ -1,4 +1,4 @@
-package com.gd.trainingCenter.service;
+package com.gd.training_center.service;
 
 public interface ReportService {
     String generateShortReport();
