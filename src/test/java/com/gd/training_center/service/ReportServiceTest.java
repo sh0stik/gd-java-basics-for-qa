@@ -1,6 +1,5 @@
 package com.gd.training_center.service;
 
-import com.gd.training_center.dao.CourseDao;
 import com.gd.training_center.dao.CurriculumDao;
 import com.gd.training_center.dao.StudentDao;
 import com.gd.training_center.model.Course;
@@ -16,55 +15,57 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static com.gd.training_center.model.ReportType.FULL_REPORT;
+import static com.gd.training_center.model.ReportType.SHORT_REPORT;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 public class ReportServiceTest {
+
     @Mock
-    CourseDao courseDao;
+    private CurriculumDao curriculumDao;
     @Mock
-    CurriculumDao curriculumDao;
-    @Mock
-    StudentDao studentDao;
-    @Mock
-    Student student;
+    private StudentDao studentDao;
 
     @BeforeMethod
     public void init() {
         MockitoAnnotations.initMocks(this);
     }
 
-
     @Test
-    public void generateShortReport_shouldContainsCorrectCurriculumName() {
-        when(curriculumDao.getByName("JavaDev")).thenReturn(new Curriculum("JavaDev", Arrays.asList("Java", "JDBC")));
-        when(studentDao.getAll()).thenReturn(singletonList(new Student("Petrov", "Peter", "JavaDev", LocalDateTime.of(2022, 5, 11, 10, 0))));
-        ReportService reportService = new ReportServiceImpl(studentDao, courseDao, curriculumDao);
-        String expectedCurriculumName = "JavaDev";
-        when(curriculumDao.getByName("JavaDev").getDuration()).thenReturn(Duration.ofHours(15));
+    public void generateShortReport_twoStudentsOneCurriculumTwoCourses_shouldNotContainCoursesInfo() {
+        String curriculumName = "JavaDev";
+        Course javaCourse = new Course("Java", Duration.ofHours(16));
+        Course jdbcCourse = new Course("JDBC", Duration.ofHours(10));
+        Curriculum javaDevCurriculum = new Curriculum(curriculumName,
+                Arrays.asList(javaCourse, jdbcCourse));
+        when(curriculumDao.getByName(curriculumName)).thenReturn(javaDevCurriculum);
+        when(studentDao.getAll()).thenReturn(singletonList(new Student("Petrov", "Peter",
+                LocalDateTime.of(2022, 5, 11, 10, 0), javaDevCurriculum)));
+        ReportService reportService = new ReportServiceImpl(studentDao, SHORT_REPORT);
 
-        String result = reportService.generateShortReport();
+        String result = reportService.generateReport();
 
-        assertThat("Report should contains JavaDev curriculum name", result.contains(expectedCurriculumName));
+        assertFalse(result.contains("Course"), "Report should not contain courses information");
     }
 
     @Test
-    public void generateFullReport_shouldContainsCorrectCurriculumName() {
-        when(courseDao.getByName("Selenium")).thenReturn(new Course("Selenium", Duration.ofHours(5)));
-        when(courseDao.getByName("Test design")).thenReturn(new Course("Test design", Duration.ofHours(5)));
-        when(curriculumDao.getByName("JavaDev")).thenReturn(new Curriculum("JavaDev", Arrays.asList("Selenium", "Test design")));
-        Student student = new Student("Doe", "John", "AQE", LocalDateTime.of(2022, 5, 11, 10, 0));
-        when(studentDao.getAll()).thenReturn(singletonList(student));
-        ReportService reportService = new ReportServiceImpl(studentDao, courseDao, curriculumDao);
-        String expectedCurriculumName = "AQE";
-        when(curriculumDao.getByName("AQE").getDuration()).thenReturn(Duration.ofHours(10));
-        when(this.student.getCurriculum().getCourseList()).thenReturn(singletonList(new Course("Selenium", Duration.ofHours(5))));
-        when(this.student.getCurriculum().getCourseList()).thenReturn(singletonList(new Course("Test design", Duration.ofHours(5))));
+    public void generateFullReport_twoStudentsOneCurriculumTwoCourses_shouldContainCourseNames() {
+        Course javaCourse = new Course("Java", Duration.ofHours(16));
+        Course jdbcCourse = new Course("JDBC", Duration.ofHours(10));
+        Curriculum javaDevCurriculum = new Curriculum("JavaDev",
+                Arrays.asList(javaCourse, jdbcCourse));
+        when(curriculumDao.getByName("JavaDev")).thenReturn(javaDevCurriculum);
+        when(studentDao.getAll()).thenReturn(singletonList(new Student("Peter", "Petrov",
+                LocalDateTime.of(2022, 5, 11, 10, 0), javaDevCurriculum)));
+        ReportService reportService = new ReportServiceImpl(studentDao, FULL_REPORT);
+        String courseName = "JDBC";
 
-        String result = reportService.generateFullReport();
+        String result = reportService.generateReport();
 
-        assertThat("Report should contains AQE curriculum name", result.contains(expectedCurriculumName));
+        assertTrue(result.contains(courseName), "Report should contain JDBC course information");
     }
 
 }

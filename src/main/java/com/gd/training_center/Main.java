@@ -8,6 +8,7 @@ import com.gd.training_center.dao.impl.CurriculumDaoImpl;
 import com.gd.training_center.dao.impl.StudentsDaoImpl;
 import com.gd.training_center.model.Course;
 import com.gd.training_center.model.Curriculum;
+import com.gd.training_center.model.ReportType;
 import com.gd.training_center.model.Student;
 import com.gd.training_center.service.ReportService;
 import com.gd.training_center.service.impl.ReportServiceImpl;
@@ -33,36 +34,37 @@ public class Main {
                 new Course("Selenium", Duration.ofHours(16))
         ).collect(toMap(Course::getName, identity())));
         CurriculumDao curriculumDao = new CurriculumDaoImpl(Stream.of(
-                        new Curriculum("Java Developer", Arrays.asList("Java", "JDBC", "Spring")),
-                        new Curriculum("AQE", Arrays.asList("Test design", "Page Object", "Selenium")))
-                .collect(toMap(Curriculum::getName, identity())), courseDao);
+                        new Curriculum("Java Developer", Arrays.asList(courseDao.getByName("Java"), courseDao.getByName("JDBC"), courseDao.getByName("Spring"))),
+                        new Curriculum("AQE", Arrays.asList(courseDao.getByName("Test design"), courseDao.getByName("Page Object"), courseDao.getByName("Selenium"))))
+                .collect(toMap(Curriculum::getName, identity())));
         StudentDao studentDao = new StudentsDaoImpl(Arrays.asList(
-                new Student("Ivan", "Ivanov", "Java Developer", LocalDateTime.of(2022, 4, 8, 10, 0)),
-                new Student("Ivan", "Sidorov", "AQE", LocalDateTime.of(2022, 5, 5, 10, 0))), curriculumDao);
-        ReportService reportService = new ReportServiceImpl(studentDao, courseDao, curriculumDao);
+                new Student("Ivan", "Ivanov", LocalDateTime.of(2022, 4, 8, 10, 0), curriculumDao.getByName("Java Developer")),
+                new Student("Ivan", "Sidorov", LocalDateTime.of(2022, 5, 5, 10, 0), curriculumDao.getByName("AQE"))));
 
+        ReportType reportType;
         Integer parameter = getInputParameter();
 
-        printReport(reportService, parameter);
+        if (parameter == 0) {
+            reportType = ReportType.SHORT_REPORT;
+        } else {
+            reportType = ReportType.FULL_REPORT;
+        }
+        ReportService reportService = new ReportServiceImpl(studentDao, reportType);
+        printReport(reportService, reportType);
     }
 
-    private static void printReport(ReportService reportService, Integer parameter) {
-        if (isaShortReport(parameter)) {
+    private static void printReport(ReportService reportService, ReportType reportType) {
+        if (reportType.equals(ReportType.SHORT_REPORT)) {
             System.out.printf("Short (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
-            System.out.println(reportService.generateShortReport());
         } else {
             System.out.printf("Full (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
-            System.out.println(reportService.generateFullReport());
         }
+        System.out.println(reportService.generateReport());
     }
 
     private static Integer getInputParameter() {
         Scanner input = new Scanner(System.in);
-        System.out.println("Input 0 for Short report, any digit for Full report");
+        System.out.println("Enter 0 for Short report, any digit for Full report");
         return input.nextInt();
-    }
-
-    private static boolean isaShortReport(Integer parameter) {
-        return parameter == null || parameter == 0;
     }
 }

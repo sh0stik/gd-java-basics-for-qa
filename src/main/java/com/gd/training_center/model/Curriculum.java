@@ -5,22 +5,23 @@ import lombok.Data;
 import java.time.Duration;
 import java.util.List;
 
-
-public @Data class Curriculum {
+@Data
+public class Curriculum {
     private final String name;
-    private final List<String> courseNames;
     private List<Course> courseList;
+    private Duration duration;
 
-    public Curriculum(String name, List<String> courseNames) {
+    public Curriculum(String name, List<Course> courseList) {
         this.name = name;
-        this.courseNames = courseNames;
+        this.courseList = courseList;
+        this.duration = calculateDuration();
     }
 
-    public Duration getDuration() {
-        Duration duration = Duration.ofHours(0);
+    public Duration calculateDuration() {
+        Duration calculatedDuration = Duration.ofHours(0);
         for (Course course : courseList) {
-            duration = duration.plusHours(course.getDuration().toHours());
+            calculatedDuration = calculatedDuration.plusHours(course.getDuration().toHours());
         }
-        return duration;
+        return calculatedDuration;
     }
 }

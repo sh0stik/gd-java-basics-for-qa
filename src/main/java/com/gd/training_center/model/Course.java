@@ -6,7 +6,8 @@ import lombok.Data;
 import java.time.Duration;
 
 @AllArgsConstructor
-public @Data class Course {
+@Data
+public class Course {
     /**
      * Course is unique
      */
