@@ -45,21 +45,24 @@ public class Main {
         Integer parameter = getInputParameter();
 
         if (parameter == 0) {
-            reportType = ReportType.SHORT_REPORT;
+            reportType = ReportType.SHORT;
         } else {
-            reportType = ReportType.FULL_REPORT;
+            reportType = ReportType.FULL;
         }
-        ReportService reportService = new ReportServiceImpl(studentDao, reportType);
+        ReportService reportService = new ReportServiceImpl(studentDao);
         printReport(reportService, reportType);
     }
 
     private static void printReport(ReportService reportService, ReportType reportType) {
-        if (reportType.equals(ReportType.SHORT_REPORT)) {
-            System.out.printf("Short (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
-        } else {
-            System.out.printf("Full (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
+        switch (reportType) {
+            case SHORT:
+                System.out.printf("Short (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
+                break;
+            case FULL:
+                System.out.printf("Full (Generating report date - %s):%n", LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy hh:mm")));
+                break;
         }
-        System.out.println(reportService.generateReport());
+        System.out.println(reportService.generateReport(reportType));
     }
 
     private static Integer getInputParameter() {

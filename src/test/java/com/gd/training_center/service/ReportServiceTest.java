@@ -15,8 +15,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static com.gd.training_center.model.ReportType.FULL_REPORT;
-import static com.gd.training_center.model.ReportType.SHORT_REPORT;
+import static com.gd.training_center.model.ReportType.FULL;
+import static com.gd.training_center.model.ReportType.SHORT;
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertFalse;
@@ -44,9 +44,9 @@ public class ReportServiceTest {
         when(curriculumDao.getByName(curriculumName)).thenReturn(javaDevCurriculum);
         when(studentDao.getAll()).thenReturn(singletonList(new Student("Petrov", "Peter",
                 LocalDateTime.of(2022, 5, 11, 10, 0), javaDevCurriculum)));
-        ReportService reportService = new ReportServiceImpl(studentDao, SHORT_REPORT);
+        ReportService reportService = new ReportServiceImpl(studentDao);
 
-        String result = reportService.generateReport();
+        String result = reportService.generateReport(SHORT);
 
         assertFalse(result.contains("Course"), "Report should not contain courses information");
     }
@@ -60,10 +60,10 @@ public class ReportServiceTest {
         when(curriculumDao.getByName("JavaDev")).thenReturn(javaDevCurriculum);
         when(studentDao.getAll()).thenReturn(singletonList(new Student("Peter", "Petrov",
                 LocalDateTime.of(2022, 5, 11, 10, 0), javaDevCurriculum)));
-        ReportService reportService = new ReportServiceImpl(studentDao, FULL_REPORT);
+        ReportService reportService = new ReportServiceImpl(studentDao);
         String courseName = "JDBC";
 
-        String result = reportService.generateReport();
+        String result = reportService.generateReport(FULL);
 
         assertTrue(result.contains(courseName), "Report should contain JDBC course information");
     }

@@ -12,17 +12,15 @@ import java.util.List;
 public class ReportServiceImpl implements ReportService {
     private final StudentDao studentDao;
     private static final LocalDateTime CURRENT_DATE = LocalDateTime.now();
-    private final ReportType reportType;
 
 
-    public ReportServiceImpl(StudentDao studentDao, ReportType reportType) {
+    public ReportServiceImpl(StudentDao studentDao) {
         this.studentDao = studentDao;
-        this.reportType = reportType;
     }
 
 
     @Override
-    public String generateReport() {
+    public String generateReport(ReportType reportType) {
         List<Student> students = studentDao.getAll();
         StringBuilder allStudentsReport = new StringBuilder();
 
@@ -32,6 +30,4 @@ public class ReportServiceImpl implements ReportService {
         }
         return allStudentsReport.toString();
     }
-
-
 }
