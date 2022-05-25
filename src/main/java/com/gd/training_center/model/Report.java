@@ -25,9 +25,18 @@ public class Report {
         this.endToCurrentDateDuration = Duration.between(student.getEndDate(), currentDate);
         // Calling abs() since Duration can be negative
         this.fullDaysBetween = abs(endToCurrentDateDuration.toDays());
-        this.remainingHours = abs(endToCurrentDateDuration.minusDays(fullDaysBetween).toHours());
+        this.remainingHours = calculateRemainingHours();
     }
 
+    private long calculateRemainingHours() {
+        long hours;
+        if (currentDate.isAfter(student.getEndDate())) {
+            hours = abs(endToCurrentDateDuration.minusDays(fullDaysBetween).toHours());
+        } else {
+            hours = abs(endToCurrentDateDuration.plusDays(fullDaysBetween).toHours());
+        }
+        return hours;
+    }
 
     public String getReport() {
         StringBuilder result = new StringBuilder();

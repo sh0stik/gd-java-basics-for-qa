@@ -38,7 +38,8 @@ public class Main {
                         new Curriculum("AQE", Arrays.asList(courseDao.getByName("Test design"), courseDao.getByName("Page Object"), courseDao.getByName("Selenium"))))
                 .collect(toMap(Curriculum::getName, identity())));
         StudentDao studentDao = new StudentsDaoImpl(Arrays.asList(
-                new Student("Ivan", "Ivanov", LocalDateTime.of(2022, 4, 8, 10, 0), curriculumDao.getByName("Java Developer")),
+                new Student("Ivan", "Ivanov", LocalDateTime.of(2022, 5, 25, 10, 0), curriculumDao.getByName(
+                        "Java Developer")),
                 new Student("Ivan", "Sidorov", LocalDateTime.of(2022, 5, 5, 10, 0), curriculumDao.getByName("AQE"))));
 
         ReportType reportType;
